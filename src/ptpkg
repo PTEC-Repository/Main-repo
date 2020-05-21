@@ -2,6 +2,8 @@
 
 ver = 'DEVELOPMENT'
 
+print('\n     PTEC Pakage Manager | Version: ' + ver + '\n')
+
 import sys
 import os
 
