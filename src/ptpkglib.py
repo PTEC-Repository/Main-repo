@@ -13,7 +13,7 @@ def checkInstall():
     else:
         return False
 
-def Install():
+def Install(pkg):
 
     sys.path.append(home + '/PTEC/base/lib')
     import ptlib
@@ -23,14 +23,5 @@ def Install():
     os.system('rm ~/PTEC/base/tmp/* -r')
     print('PTEC Tmp Directory Cleared')
 
-    Path = input('Path Of PTPKG File:')
-
-    if os.path.isfile(Path):
-        print('Installing: ' + Path)
-    elif os.path.isdir(Path):
-        print('Path \'' + Path + '\' Is a Directory. Exiting')
-        exit()
-    else:
-        print('\'' + Path + '\' Is Not Existent, Not a File or Not Valid. Exiting')
-        exit()
-
+def Remove(pkg):
+    print('ptpkglib Remove Function Not Implimented')
