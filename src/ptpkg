@@ -11,6 +11,23 @@ def installerUI():
     print('Installer UI Is Not Yet Implimented!, Exiting')
     exit()
 
+def decode(cmd):
+    if cmd == 'install' or cmd == 'i':
+        if options[0]:
+            ptlib.log('Calling ptpkglib Install() for package: ' + options[1])
+            ptpkglib.Install(options[1])
+        else:
+            ptlib.log('No Package Specified. Exiting')
+            exit()
+    elif cmd == 'remove' or cmd == 'r':
+        if options[0]:
+            ptlib.log('Calling ptpkglib Remove() For Package: ' + options[1])
+            ptpkglib.Remove(options[1])
+        else:
+            ptlib.log('No Package Specified. Exiting')
+            exit()
+    else:
+        ptlib.log('Invalid Command: ' + cmd + '\nUse Command \'help\' For a List Of Avalible Commands')
 try:
     home = os.environ['HOME']
     sys.path.append(home + '/PTEC/base/lib')
@@ -28,8 +45,11 @@ except ModuleNotFoundError:
 
 ptlib.log('Modules ptlib and ptpkglib successfully loaded!')
 
-if len(sys.argv) << 1:
+if len(sys.argv) < 2:
     ptlib.log('No Commands Parsed! Starting UI!')
     installerUI()
 else:
     options = sys.argv[1:]
+    command = options[0]
+
+decode(command)
