@@ -2,6 +2,24 @@
 
 ver = 'DEVELOPMENT'
 
+helpTxt = '''
+Help Text For PTPKG Package Manager
+Syntax: ptpkg <command> <optional arguments(pakage, usually)>
+commands: <longhand> <shorthand> <optional arguments> <Description>
+
+install          i     <package>   Install Package From Repository List
+remove           r     <package>   Remove Installed Package Note: This will not remove any binaries, only assets
+repolist-gen     r-g   N/A         Overwrite And Re-Generate Repository List
+help             h     N/A         Display This Text (Damn Obviously!)
+
+Examples:
+ptpkg install hello
+ptpkg i hello
+
+To Generate The Repository List:
+ptpkg r-g
+'''
+
 print('\n     PTEC Pakage Manager | Version: ' + ver + '\n')
 
 import sys
@@ -13,19 +31,46 @@ def installerUI():
 
 def decode(cmd):
     if cmd == 'install' or cmd == 'i':
-        if options[0]:
+        if len(options) > 1:
             ptlib.log('Calling ptpkglib Install() for package: ' + options[1])
             ptpkglib.Install(options[1])
         else:
             ptlib.log('No Package Specified. Exiting')
             exit()
     elif cmd == 'remove' or cmd == 'r':
-        if options[0]:
+        if len(options) > 1:
             ptlib.log('Calling ptpkglib Remove() For Package: ' + options[1])
             ptpkglib.Remove(options[1])
         else:
             ptlib.log('No Package Specified. Exiting')
             exit()
+    elif cmd == 'repolist-gen' or cmd == 'r-g':
+        ptlib.log('     PTPKG Built-In Repolist Generator / Manager')
+        if input('WARNING: This Action Will Overwrite The Repolist, continue? [y/n]') == 'y':
+            ptpkglib.clearRepo()
+        else:
+            ptlib.log('User Cancelled. Exiting')
+            exit()
+        addmain = input('Add Main Repository? [y/n]')
+        if addmain == 'y' or addmain == 'yes':
+            ptlib.log('Adding Main Repository To Repolist')
+            ptpkglib.addRepo(ptpkglib.mainRepo)
+            ptlib.log('Main Repository Added To Repolist!')
+        if input('Add Another Repository? [y/n]') == 'y':
+            path = input('Repository File/URl Path: ')
+            if path[0:4] == 'http':
+                ptpkglib.addRepo(path)
+                ptlib.log('Repo \'' + path + '\' Added To Repolist')
+            elif path[0:1] == '/':
+                path = 'file:' + path
+                ptlib.log('converted file path to URL: ' + path)
+                ptpkglib.addRepo(path)
+                ptlib.log('Repo \'' + path + '\' Added To Repolist')
+            else:
+                ptlib.log('File Path Or URL Seems To Be Invalid! Not Adding')
+
+    elif cmd == 'help' or cmd == 'h':
+        print(helpTxt)
     else:
         ptlib.log('Invalid Command: ' + cmd + '\nUse Command \'help\' For a List Of Avalible Commands')
 try:
