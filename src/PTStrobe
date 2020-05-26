@@ -1,0 +1,36 @@
+#!/usr/bin/env python3
+
+import tkinter
+
+def setColour(colour):
+    root.config(bg = colour)
+
+def custom():
+    selector = tkinter.Tk()
+    selector.title("Custom colour")
+
+    select = tkinter.LabelFrame(selector, text = "Hex Colour")
+    select.pack()
+
+    Colour = tkinter.Entry(select)
+    Colour.grid(row = 0, columnspan = 2)
+
+    Colour.insert(1, "#")
+    tkinter.Button(select, text = "Select", command = lambda:setColour(Colour.get())).grid(row = 1, column =1)
+    tkinter.Button(select, text = "Cancel", command = lambda:selector.destroy()).grid(row = 1, column = 0)
+
+root = tkinter.Tk()
+root.title("PTEC Strobe Light")
+
+menubar = tkinter.Menu()
+root.config(menu = menubar)
+
+colourmenu = tkinter.Menu()
+menubar.add_cascade(label = "Colour", menu = colourmenu)
+
+colourmenu.add_command(label = "Red", command = lambda:setColour("#FF0000"))
+colourmenu.add_command(label = "Green", command = lambda:setColour("#00FF00"))
+colourmenu.add_command(label = "Blue", command = lambda:setColour("#0000FF"))
+colourmenu.add_command(label = "Custom", command = lambda:custom())
+
+root.mainloop()

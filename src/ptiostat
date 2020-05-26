@@ -1,0 +1,85 @@
+#!/usr/bin/env python3
+
+ver = '1.0'
+
+import sys
+import os
+
+home = os.environ['HOME'] + '/'
+sys.path.append(home + 'PTEC/base/lib/')
+
+try:
+    import ptlib
+except ImportError:
+    print('Cannot import PTEC ptlib')
+    exit()
+
+try:
+    import ptiolib
+except ImportError:
+    print('Cannot import PTEC ptiolib')
+    exit()
+#######################################
+
+def loadData():
+    global battery
+    global hasBattery
+    global batteryStatus
+    global thermalZones
+    global hasBacklight
+    global backList
+    
+    #Battery    
+    if ptiolib.hasBattery():
+        battery = ptiolib.battery()
+        hasBattery = True
+        batteryStatus = ptiolib.batteryStatus()
+    else:
+        hasBattery = False
+        battery = 'N/A'
+        
+    #Thermal
+    thermalZones = ptiolib.thermalZones()
+    
+    #Backlight
+    hasBacklight = ptiolib.hasBacklight()
+    backList = ptiolib.backList()
+
+ptlib.log('PTLIB & PTIOLIB SUCCESSFULLY LOADED!\n\nPTEC IOSTAT Device Monitor | Ver: ' + ver + '\n[ptlib ver: ' + ptlib.ver + ' | ptiolib ver: ' + ptiolib.ver + ']')
+ptlib.log('Gathering Data...')
+
+hasBattery = bool()
+battery = str()
+batteryStatus = str()
+thermalZones = list()
+hasBacklight = bool()
+backList = list()
+
+loadData()
+
+#Battery
+print('Has Battery: ' + str(hasBattery))
+print('    > Battery Percentage --- ' + battery)
+print('    > Battery Status     --- ' + batteryStatus)
+
+#Thermal
+for zone in thermalZones:
+    temp = int(ptiolib.temp(zone))
+    zone = zone.split('/')[4]
+    print('\n' + zone + ': ' + str(temp / 1000) + '°C')
+
+#Backlight
+print('\nHas Backlight(s): ' + str(hasBacklight))
+for backlight in backList:
+    backlightBrightness = ptiolib.getBrightness(backlight).rstrip()
+    maxBrightness = ptiolib.getMaxBrightness(backlight)
+    print('\n    > Backlight:' + backlight + ' Brightness: ' + str(round((int(backlightBrightness) / int(maxBrightness)) * 100)) + '%')
+
+
+
+
+
+
+
+
+

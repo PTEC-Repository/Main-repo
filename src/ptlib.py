@@ -1,5 +1,6 @@
 #ver = '1.0'
-ver = '1.1'
+#ver = '1.1'
+ver = '1.2'
 
 import time
 import os
@@ -51,7 +52,7 @@ def echoToFile(path, txt):
     file.close()
 
 def overwriteFile(path, txt):
-    file = open(path, 'w')
+    file = open(path, 'w+')
     file.write(txt)
     file.close()
 
@@ -68,9 +69,18 @@ def checkBin(exe):
 #    return dist
 # Patched code for version 1.1:-
 
+#On Termux, (where /etc/os-release is non-existent) this throws an error.
+#def distro():
+#    dist = shell('cat /etc/os-release').splitlines()[1].split('=')[1].lstrip('"').rstrip('"')
+#    return dist
+
 def distro():
-    dist = shell('cat /etc/os-release').splitlines()[1].split('=')[1].lstrip('"').rstrip('"')
-    return dist
+    if exists('/etc/os-release'):
+        dist = shell('cat /etc/os-release').splitlines()[1].split('=')[1].lstrip('"').rstrip('"')
+        return dist
+    else:
+        dist = 'UNKNOWN'
+        return dist
 
 def arch():
     return shell('uname -a').split(' ')[12]
@@ -85,6 +95,9 @@ def distInstallPrompt(pkg):
         return 'sudo pacman -S ' + pkg
     elif distro() == 'PTECOS':
         return 'ptpkg i ' + pkg + ' (or sudo pacman -S ' + pkg + ' failing that)'
+    #New code for 'UNKNOWN' Distro
+    elif distro() == 'UNKNOWN':
+        return 'Distro Is Unknown (This is a prompt to install a package, but the distro is not detected.)'
      
 def wget(URL, saveLocation):
     if checkBin('curl'):
@@ -94,6 +107,7 @@ def wget(URL, saveLocation):
 
 def unZip(file, location):
     if isFile(file) and isDir(location):
+        print('unzipping: ' + file)
         command('unzip \'' + file + '\' -d \'' + location + '\'')
     else:
         log('PTLIB: ERROR: unZip(): Input Not File Or Output Not Dir')

@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 
-ver = '1.1'
+#ver = '1.0'
+#ver = '1.1'
+ver = '1.2' #Added 'zipptec', 'packgen' and 'pkgpack' Commands!
 
 helpTxt = '''
 Help Text For PTPKG Package Manager
@@ -19,6 +21,9 @@ clrtmp           c-t   N/A         Clear PTEC Tmp Directory
 clrcache         c-c   N/A         Clear The PTEC Package Cache (Read PTEC PTPKG Documentation; page: \'The PTEC directory\' Cell: A:7)
 clrall           c-a   N/A         Clear Both The Cache And The Tmp (removes all unecissary files)
 lcache           l-c   N/A         List All Packages In The PTEC Package Cache
+packgen          p-g   N/A         Generate Package Structure From Interactive Options (And Create Unpackaged PTPKG At ./)
+pkgpack          p-p   N/A         Zip All Of ./ In To .ptpkg.zip File Located At ./
+zipptec          z-p   N/A         Zip Whole Ptec Directory In To Zip Archive. The Output Will Be Placed At '~/'
 
 Examples:
 ptpkg install hello
@@ -100,6 +105,49 @@ def decode(cmd):
         ptlib.log('list Results:\n' + ptpkglib.listAll())
     elif cmd == 'lcache' or cmd == 'l-c':
         ptpkglib.lCache()
+    elif cmd == 'packgen' or cmd == 'p-g':
+        ptlib.log('PTPKG Intigrated Package Creator')
+        Dir = sys.argv[2]
+        name = input('Package Name: ')
+        version = input('Package Version: ')
+        desc = input('Descrpition (can be blank!):')
+        category = input('Category. Valid options:\nTools\nGames\nMisc\nCommunication\nHacking\nAudio\nVideo\nMedia\nNetworking\nGraphics\nDesign\nText\nDocuments\nFeatures\nMonitoring\n\nCategory (can be blank!): ')
+        print('You Will Need To Add Executables To The exec Directory, Unless You Know What You Are Doing!')
+        assets = input('Path to directory containig assets (Leave blank for no assets): ')
+        if input('Creating Package At ./, OK?\n[y/n]') == 'y':
+            ...
+        else:
+            print('Exiting...')
+            exit()
+        os.system('mkdir ' + name) # Assets
+        if assets:
+            os.system('cp ' + assets + '/* ./' + name + '/')
+        else:
+            print('creating blank assets directory')
+        os.system('mkdir ./exec') # Exec
+        os.system('mkdir ./data/') # Data entries
+        os.system('echo \'' + version + '\' > ./data/ver')
+        os.system('echo \'' + name + '\' > ./data/name')
+        os.system('echo \'' + desc + '\' > ./data/desc')
+        os.system('echo \'' + category + '\' > ./data/category')
+        os.system('echo \"#!/bin/bash\" > ./install') # Extra install executable
+        os.system('chmod 777 ./install')
+        print('Unzipped Package Created At ./ \nYou Will Probarly Want To Zip It Now!')
+        exit()
+    elif cmd == 'pkgpack' or cmd == 'p-p':
+        ptlib.log('PTPKG Built In Package Zipper')
+        name = input('Package Name: ')
+        version = input('Package Version: ')
+        confirm = input('Zip all files in: ./ In to ' + name + '-' + version + '.ptpkg.zip\n [Y/N]')
+        if confirm == 'y' or confirm == 'yes' or confirm == 'Y' or confirm == 'Yes':
+            os.system('zip -r \'' + name + '-' + version + '.ptpkg.zip\' ./* -i \*')
+        else:
+            ptlib.log('User Cancelled, Exiting.')
+            exit()
+    elif cmd == 'zipptec' or cmd == 'z-p':
+        ptlib.log('Zipping Entire PTEC Directory To ~/')
+        ptlib.command('cd ~/ ; zip -r ./ptecSystem.zip ./PTEC/' + ' -i \*')
+        ptlib.log('You\'r Entire PTEC System Has Been Copied In to ~/ptecSystem.zip!')
     else:
         ptlib.log('Invalid Command: ' + cmd + '\nUse Command \'help\' For a List Of Avalible Commands')
 try:

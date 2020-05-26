@@ -1,4 +1,5 @@
-ver = '1.0'
+#ver = '1.0'
+ver = '1.1' # Added install script support
 
 import ptlib
 import os
@@ -62,8 +63,13 @@ def LInstall(pkg):
         print('0% (Copying Assets)')
         ptlib.command('cp \'' + tmp + name + '\' -r \'' + ptecPath + '\'')
         print('50% (Copying Binaries)')
-        ptlib.command('cp \'' + tmp + 'exec/' + name +'\' ' + ptecPath + 'base/bin/')
+        if ptlib.exists(tmp + 'exec/' + name):
+            ptlib.command('cp \'' + tmp + 'exec/' + name +'\' ' + ptecPath + 'base/bin/')
+        else:
+            print('No Executables Found In Package; This Is Not An Error!')
         print('100% (Done)')
+        ptlib.log('Running Package Install Script')
+        ptlib.command(tmp + 'install')
         ptlib.log('Package: ' + name + ' Installed!')
         exit()
     else:
