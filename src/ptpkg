@@ -1,0 +1,134 @@
+#!/usr/bin/env python3
+
+ver = '1.1'
+
+helpTxt = '''
+Help Text For PTPKG Package Manager
+Syntax: ptpkg <command> <arguments> (N/A Means \'Takes No Arguments\')
+commands:-
+<longhand> <shorthand> <arguments> <Description>
+
+install          i     <package>   Install Package From Repository List
+linstall         l-i   <file>      Install Local File
+remove           r     <package>   Remove Installed Package Note: This will not remove any binaries, only assets
+list             l     N/A         List All Packages Offered By All Repositories In The Repolist
+repolist-gen     r-g   N/A         Overwrite And Re-Generate Repository List
+help             h     N/A         Display This Text (Damn Obviously!)
+prepo            p-r   N/A         Print PTPKG Repolist File
+clrtmp           c-t   N/A         Clear PTEC Tmp Directory
+clrcache         c-c   N/A         Clear The PTEC Package Cache (Read PTEC PTPKG Documentation; page: \'The PTEC directory\' Cell: A:7)
+clrall           c-a   N/A         Clear Both The Cache And The Tmp (removes all unecissary files)
+lcache           l-c   N/A         List All Packages In The PTEC Package Cache
+
+Examples:
+ptpkg install hello
+ptpkg i hello
+
+To Generate The Repository List:
+ptpkg r-g
+'''
+
+import sys
+import os
+
+def installerUI():
+    print('Installer UI Is Not Yet Implimented!, Exiting')
+    exit()
+
+def decode(cmd):
+    if cmd == 'install' or cmd == 'i':
+        if len(options) > 1:
+            ptlib.log('Calling ptpkglib Install() for package: ' + options[1])
+            ptpkglib.Install(options[1])
+        else:
+            ptlib.log('No Package Specified. Exiting')
+            exit()
+    elif cmd == 'linstall' or cmd == 'l-i':
+        if len(options) > 1:
+            ptlib.log('Calling ptpkglib LInstall() for package: ' + options[1])
+            ptpkglib.LInstall(options[1])
+        else:
+            ptlib.log('No Package Specified. Exiting')
+            exit()
+    elif cmd == 'remove' or cmd == 'r':
+        if len(options) > 1:
+            ptlib.log('Calling ptpkglib Remove() For Package: ' + options[1])
+            ptpkglib.Remove(options[1])
+        else:
+            ptlib.log('No Package Specified. Exiting')
+            exit()
+    elif cmd == 'repolist-gen' or cmd == 'r-g':
+        ptlib.log('     PTPKG Built-In Repolist Generator / Manager')
+        if input('WARNING: This Action Will Overwrite The Repolist, continue? [y/n]') == 'y':
+            ptpkglib.clearRepo()
+        else:
+            ptlib.log('User Cancelled. Exiting')
+            exit()
+        addmain = input('Add Main Repository? [y/n]')
+        if addmain == 'y' or addmain == 'yes':
+            ptlib.log('Adding Main Repository To Repolist')
+            ptpkglib.addRepo(ptpkglib.mainRepo)
+            ptlib.log('Main Repository Added To Repolist!')
+        if input('Add Another Repository? [y/n]') == 'y':
+            path = input('Repository File/URl Path: ')
+            if path[0:4] == 'http':
+                ptpkglib.addRepo(path)
+                ptlib.log('Repo \'' + path + '\' Added To Repolist')
+            elif path[0:1] == '/':
+                path = 'file:' + path
+                ptlib.log('converted file path to URL: ' + path)
+                ptpkglib.addRepo(path)
+                ptlib.log('Repo \'' + path + '\' Added To Repolist')
+            else:
+                ptlib.log('File Path Or URL Seems To Be Invalid! Not Adding')
+    elif cmd == 'help' or cmd == 'h':
+        print(helpTxt)
+    elif cmd == 'prepo' or cmd == 'p-r':
+        print(ptlib.catFile(home + '/PTEC/base/config/repolist'))
+        ptlib.log('Repolist Printed!')
+    elif cmd == 'clrtmp' or cmd == 'c-t':
+        ptpkglib.clearTmp()
+        ptlib.log('Tmp Cleared!')
+    elif cmd == 'clrcache' or cmd == 'c-c':
+        ptpkglib.clearCache()
+        ptlib.log('Cache Cleared!')
+    elif cmd == 'clrall' or cmd == 'c-a':
+        ptpkglib.clearCache()
+        ptpkglib.clearTmp()
+        ptlib.log('Tmp And Cache Cleared!')
+    elif cmd == 'list' or cmd == 'l':
+        ptlib.log('list Results:\n' + ptpkglib.listAll())
+    elif cmd == 'lcache' or cmd == 'l-c':
+        ptpkglib.lCache()
+    else:
+        ptlib.log('Invalid Command: ' + cmd + '\nUse Command \'help\' For a List Of Avalible Commands')
+try:
+    home = os.environ['HOME']
+    sys.path.append(home + '/PTEC/base/lib')
+    import ptpkglib
+except ModuleNotFoundError:
+    ptlib.log('Error: Could Not Import ptpkglib, Exiting')
+    exit()
+try:
+    home = os.environ['HOME']
+    sys.path.append(home + '/PTEC/base/lib')
+    import ptlib
+except ModuleNotFoundError:
+    ptlib.log('Error: Could Not Import ptlib, Exiting')
+    exit()
+
+ptlib.log('Modules ptlib and ptpkglib successfully loaded!')
+
+# Ver: 1.1: Added ptpkglib & ptlib versions to start message:-
+startmsg = '     PTEC Pakage Manager | Version: ' + ver + '     \n     Running on: ' + ptlib.distro() + ':' + ptlib.arch() + ' (' + ptlib.hostname() + ') \n     Ptlib Version: ' + ptlib.ver + ' | Ptpkglib Version: ' + ptpkglib.ver + '\n' 
+
+print(startmsg)
+
+if len(sys.argv) < 2:
+    ptlib.log('No Commands Parsed! Starting UI!')
+    installerUI()
+else:
+    options = sys.argv[1:]
+    command = options[0]
+
+decode(command)
