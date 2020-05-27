@@ -1,0 +1,92 @@
+#!/usr/bin/env python3
+
+ver = '1.0-ALPHA'
+
+import sys
+import os
+
+os.system('clear')
+
+home = os.environ['HOME']
+
+sys.path.append(home + '/PTEC/base/lib')
+
+try:
+    import ptlib
+    ptlib.log('PTLIB Imported!')
+except ImportError:
+    print('Cant import ptlib. Is PTEC System installed?')
+    exit()
+
+try:
+    import ptlib_ptpc_emu
+    ptlib.log('ptlib_ptpc_emu Imported!')
+except ImportError:
+    print('Cant import ptlib_ptpc_emu. Is ptlib_ptpc_emu installed?')
+    print('You could run \'ptlib_ptpc_emu\' to fix this')
+##################################################
+
+ptpcEmuPath = home + '/PTEC/PTPC-Emu/'
+ptpcEmuROM = ptpcEmuPath + 'ROM'
+
+mode = 'PTIS-8BITS'
+decMode = 'PTASM'
+skip = 0
+
+MP = 0 #Memory Pointer
+FLAGS = 0 #FLAGS
+A = 0 #A
+B = 0 #B
+C = 0 #C
+FRAME = 0
+
+def GUI():
+    ptlib.log('No GUI Implimented Yet! Exiting...')
+    exit()
+
+def decode(value):
+    global skip
+    global ROM
+    global MP
+    global FLAGS
+    global A
+    global B
+    global C
+    value1 = ROM[MP + 1]
+    value2 = ROM[MP + 2]
+    skip = 0
+    if value == 0:
+        ...
+    if value == 1:
+        #print('ADD')
+        print('(' + str(MP) + ') Adding: ' + str(value1) + ' and ' + str(value2))
+        skip = 2
+    if value == 2:
+        print('ADDA')
+        skip = 2
+    elif value > 19:
+        print('INVALID: ' + str(value))
+    
+
+args = sys.argv
+if len(args) > 1:
+    ...
+else:
+    #ptlib.log('No commands parsed. Starting GUI')
+    #GUI()
+    ptlib.log('Running PTPC Emulator with default settings:\n' + 'Mode:' + mode + '\n\nDecode Mode:' + decMode)
+    
+ROM = ptlib_ptpc_emu.getROM(ptpcEmuROM)
+ROMlen = len(ROM)
+print('Rom Is ' + str(ROMlen) + ' Bytes Long\n')
+
+while True:
+    if MP < ROMlen - 2:
+        FRAME = FRAME + 1
+        value = ROM[MP]
+        #print('MP=' + str(MP) + ' Value = ' + str(value) + '(HEX: ' + hex(value) + ')')
+        decode(value)
+        MP = MP + 1 + skip
+    else:
+        ptlib.log('Execution Ended')
+        break
