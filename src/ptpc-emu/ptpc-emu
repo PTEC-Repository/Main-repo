@@ -28,9 +28,10 @@ except ImportError:
 
 ptpcEmuPath = home + '/PTEC/PTPC-Emu/'
 ptpcEmuROM = ptpcEmuPath + 'ROM'
+ptpcEmuMEM = ptpcEmuPath + 'MEM'
 
 mode = 'PTIS-8BITS'
-decMode = 'PTASM'
+decMode = 'NORMAL'
 skip = 0
 
 MP = 0 #Memory Pointer
@@ -54,13 +55,17 @@ def decode(value):
     global C
     value1 = ROM[MP + 1]
     value2 = ROM[MP + 2]
+    value3 = ROM[MP + 3]
+    value1_2 = ROM[MP + 1] + ROM[MP + 2]
     skip = 0
     if value == 0:
         ...
     if value == 1:
-        #print('ADD')
-        print('(' + str(MP) + ') Adding: ' + str(value1) + ' and ' + str(value2))
-        skip = 2
+        print('(ADDRESS: ' + str(MP) + ', FRAME: ' + str(FRAME) + ') Adding: ' + str(value2) + ' To Address: ' + str(value1_2))
+        ramIndex = value1_2 - 255
+        print(str(value1_2) + ' ramIndex: ' + str(ramIndex))
+        #ptlib_ptpc_emu.writeMEM(value1_2 - 256, ptlib_ptpc_emu.readMEM(value1_2, ptpcEmuMEM) + value2, ptpcEmuMEM)
+        skip = 4
     if value == 2:
         print('ADDA')
         skip = 2
@@ -78,15 +83,21 @@ else:
     
 ROM = ptlib_ptpc_emu.getROM(ptpcEmuROM)
 ROMlen = len(ROM)
-print('Rom Is ' + str(ROMlen) + ' Bytes Long\n')
+MEMlen = len(ptlib_ptpc_emu.getMEM(ptpcEmuMEM))
+print('Rom Is ' + str(ROMlen) + ' Bytes Long')
+print('Mem Is ' + str(MEMlen) + ' Bytes Long')
+print('Total Memory: ' + str(ROMlen + MEMlen) + '\n')
 
-while True:
-    if MP < ROMlen - 2:
-        FRAME = FRAME + 1
-        value = ROM[MP]
-        #print('MP=' + str(MP) + ' Value = ' + str(value) + '(HEX: ' + hex(value) + ')')
-        decode(value)
-        MP = MP + 1 + skip
-    else:
-        ptlib.log('Execution Ended')
-        break
+ptlib_ptpc_emu.writeMEM(0, 255, ptpcEmuMEM)
+
+if decMode == 'NORMAL':
+    while True:
+        if MP < ROMlen - 3:
+            FRAME = FRAME + 1
+            value = ROM[MP]
+            #print('MP=' + str(MP) + ' Value = ' + str(value) + '(HEX: ' + hex(value) + ')')
+            decode(value)
+            MP = MP + 1 + skip
+        else:
+            ptlib.log('Execution Ended')
+            break
