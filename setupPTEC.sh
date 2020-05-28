@@ -12,8 +12,8 @@ unzip ptecSystem.zip
 
 export PATH='$HOME/PTEC/base/bin/:$PATH'
 
-echo "export $PATH='$HOME/PTEC/base/bin/:$PATH'" >> ~/bash.bashrc
+echo "export PATH=$HOME/PTEC/base/bin:$PATH" >> ~/.bashrc
 
-echo "export $PATH='$HOME/PTEC/base/bin/:$PATH'" >> ~/profile
+echo "export $PATH='$HOME/PTEC/base/bin:$PATH'" >> ~/bash.bashrc
 
 echo "PTPKG Installed, the command ptpkg will now work on any terminal opened from now."
