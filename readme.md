@@ -18,5 +18,6 @@ To update:
 ~/setupPTEC.sh
 
 Ubuntu users:
-You may experience import errors with distutuls, this should fix that:
+You may experience import errors with distutuls and curl this should fix that:
 sudo apt install python3-distutils
+sudo apt install curl
